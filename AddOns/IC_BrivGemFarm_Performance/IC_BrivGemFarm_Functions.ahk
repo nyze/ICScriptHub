@@ -294,11 +294,15 @@ class IC_BrivGemFarm_Class
         GuiControl, ICScriptHub:, g_StackCountSBID, % sbStackMessage
         GuiControl, ICScriptHub:, g_StackCountHID, % hasteStackMessage
 
-        dtCurrentRunTime := Round( ( A_TickCount - previousLoopStartTime ) / 60000, 2 )
-        GuiControl, ICScriptHub:, dtCurrentRunTimeID, % dtCurrentRunTime
+        ;dtCurrentRunTime := Round( ( A_TickCount - previousLoopStartTime ) / 60000, 2 )
+        ;GuiControl, ICScriptHub:, dtCurrentRunTimeID, % dtCurrentRunTime
+        dtCurrentRunTime := A_TickCount - previousLoopStartTime
+        GuiControl, ICScriptHub:, dtCurrentRunTimeID, % GUIFunctions.MillisecondsToText(dtCurrentRunTime)
 
-        dtCurrentLevelTime := Round( ( A_TickCount - previousZoneStartTime ) / 1000, 2 )
-        GuiControl, ICScriptHub:, dtCurrentLevelTimeID, % dtCurrentLevelTime
+        ;dtCurrentLevelTime := Round( ( A_TickCount - previousZoneStartTime ) / 1000, 2 )
+        ;GuiControl, ICScriptHub:, dtCurrentLevelTimeID, % dtCurrentLevelTime
+        dtCurrentLevelTime := A_TickCount - previousZoneStartTime
+        GuiControl, ICScriptHub:, dtCurrentLevelTimeID, % GUIFunctions.MillisecondsToText(dtCurrentLevelTime,1)
         Critical, Off
     }
 
@@ -369,7 +373,8 @@ class IC_BrivGemFarm_Class
                     SharedRunData.PurchasedSilverChests := 0    
                 }
                 
-                FastRunTime := 1000
+                ;FastRunTime := 1000
+                FastRunTime := 1000000
                 ScriptStartTime := A_TickCount
             }
             if(IsObject(IC_InventoryView_Component)) ; If InventoryView AddOn is available
@@ -378,34 +383,48 @@ class IC_BrivGemFarm_Class
                 InventoryViewRead.Call(TotalRunCount)
             }
             LastResetCount := g_SF.Memory.ReadResetsCount()
-            PreviousRunTime := round( ( A_TickCount - RunStartTime ) / 60000, 2 )
-            GuiControl, ICScriptHub:, PrevRunTimeID, % PreviousRunTime
+            ;PreviousRunTime := round( ( A_TickCount - RunStartTime ) / 60000, 2 )
+            ;GuiControl, ICScriptHub:, PrevRunTimeID, % PreviousRunTime
+            PreviousRunTime := A_TickCount - RunStartTime
+            GuiControl, ICScriptHub:, PrevRunTimeID, % GUIFunctions.MillisecondsToText(PreviousRunTime)
 
-            if ( SlowRunTime < PreviousRunTime AND !StackFail AND TotalRunCount )
-                GuiControl, ICScriptHub:, SlowRunTimeID, % SlowRunTime := PreviousRunTime
-            if ( FastRunTime > PreviousRunTime AND !StackFail AND TotalRunCount )
-                GuiControl, ICScriptHub:, FastRunTimeID, % FastRunTime := PreviousRunTime
+            if ( SlowRunTime < PreviousRunTime AND !StackFail AND TotalRunCount ){
+                ;GuiControl, ICScriptHub:, SlowRunTimeID, % SlowRunTime := PreviousRunTime
+                SlowRunTime := PreviousRunTime
+                GuiControl, ICScriptHub:, SlowRunTimeID, % GUIFunctions.MillisecondsToText(SlowRunTime)
+			}
+            if ( FastRunTime > PreviousRunTime AND !StackFail AND TotalRunCount ){
+                ;GuiControl, ICScriptHub:, FastRunTimeID, % FastRunTime := PreviousRunTime
+                FastRunTime := PreviousRunTime
+                GuiControl, ICScriptHub:, FastRunTimeID, % GUIFunctions.MillisecondsToText(FastRunTime)
+			}
             if ( StackFail ) ; 1 = Did not make it to Stack Zone. 2 = Stacks did not convert. 3 = Game got stuck in adventure and restarted.
             {
-                GuiControl, ICScriptHub:, FailRunTimeID, % PreviousRunTime
+                ;GuiControl, ICScriptHub:, FailRunTimeID, % PreviousRunTime
+                GuiControl, ICScriptHub:, FailRunTimeID, % GUIFunctions.MillisecondsToText(PreviousRunTime)
                 FailRunTime += PreviousRunTime
-                GuiControl, ICScriptHub:, TotalFailRunTimeID, % round( FailRunTime, 2 )
+                ;GuiControl, ICScriptHub:, TotalFailRunTimeID, % round( FailRunTime, 2 )
+                GuiControl, ICScriptHub:, TotalFailRunTimeID, % GUIFunctions.MillisecondsToText(FailRunTime)
                 GuiControl, ICScriptHub:, FailedStackingID, % ArrFnc.GetDecFormattedArrayString(SharedRunData.StackFailStats.TALLY)
             }
 
             GuiControl, ICScriptHub:, TotalRunCountID, % TotalRunCount
-            dtTotalTime := (A_TickCount - ScriptStartTime) / 3600000
-            GuiControl, ICScriptHub:, dtTotalTimeID, % Round( dtTotalTime, 2 )
-            GuiControl, ICScriptHub:, AvgRunTimeID, % Round( ( dtTotalTime / TotalRunCount ) * 60, 2 )
+            ;dtTotalTime := (A_TickCount - ScriptStartTime) / 3600000
+            dtTotalTime := A_TickCount - ScriptStartTime
+            ;GuiControl, ICScriptHub:, dtTotalTimeID, % Round( dtTotalTime, 2 )
+            GuiControl, ICScriptHub:, dtTotalTimeID, % GUIFunctions.MillisecondsToText(dtTotalTime)
+            ;GuiControl, ICScriptHub:, AvgRunTimeID, % Round( ( dtTotalTime / TotalRunCount ) * 60, 2 )
+            GuiControl, ICScriptHub:, AvgRunTimeID, % GUIFunctions.MillisecondsToText(Round(dtTotalTime / TotalRunCount))
 
             if(g_SF.Memory.GetCoreXPByInstance(ActiveGameInstance))
-                BossesPerHour := Round( ( ( g_SF.Memory.GetCoreXPByInstance(ActiveGameInstance) - CoreXPStart ) / 5 ) / dtTotalTime, 2 )
+                BossesPerHour := Round( ( ( g_SF.Memory.GetCoreXPByInstance(ActiveGameInstance) - CoreXPStart ) / 5 ) / dtTotalTime * 3600000, 2 )
+                ;BossesPerHour := Round( ( ( g_SF.Memory.GetCoreXPByInstance(ActiveGameInstance) - CoreXPStart ) / 5 ) / dtTotalTime, 2 )
             GuiControl, ICScriptHub:, bossesPhrID, % BossesPerHour
 
             GemsTotal := ( g_SF.Memory.ReadGems() - GemStart ) + ( g_SF.Memory.ReadGemsSpent() - GemSpentStart )
             GuiControl, ICScriptHub:, GemsTotalID, % GemsTotal
-            GuiControl, ICScriptHub:, GemsPhrID, % Round( GemsTotal / dtTotalTime, 2 )
-
+            ;GuiControl, ICScriptHub:, GemsPhrID, % Round( GemsTotal / dtTotalTime, 2 )
+            GuiControl, ICScriptHub:, GemsPhrID, % Round( GemsTotal / dtTotalTime * 3600000, 2 )
             if (IsObject(SharedRunData))
             {
                 GuiControl, ICScriptHub:, SilversPurchasedID, % g_SF.Memory.GetChestCountByID(1) - SilverChestCountStart + (IsObject(SharedRunData) ? SharedRunData.PurchasedSilverChests : SilversPurchasedID)

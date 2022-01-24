@@ -129,6 +129,20 @@ class GUIFunctions
     LV_Scope(gui, lv) {
         return new ListviewScope(gui, lv)
     }
+
+    MillisecondsToText(MilliSeconds,ShowMilliSeconds := 0){
+        Millies := Mod(MilliSeconds,1000)
+        Seconds := Floor(MilliSeconds/1000)
+        time = 19990101  ; *Midnight* of an arbitrary date.
+        time += %Seconds%, seconds
+        FormatTime, mmss, %time%, mm:ss
+        if(ShowMilliSeconds){
+            return Seconds//3600 . ":" . mmss . "." Millies
+        }
+        else {
+            return Seconds//3600 . ":" . mmss
+        }
+    }
 }
 
     
