@@ -561,6 +561,9 @@ class IC_BrivGemFarm_Class
             this.StackRestart()
         else if (stacks < g_BrivUserSettings[ "TargetStacks" ])
             this.StackNormal()
+        ; extra dashwait
+        if ( !g_BrivUserSettings[ "DisableDashWait" ] AND isShandieInFormation ) ;AND g_SF.Memory.ReadHighestZone() + 50 < g_BrivUserSettings[ "StackZone"] )
+            g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
     }
 
     /*  StackRestart - Stack Briv's SteelBones by switching to his formation and restarting the game.

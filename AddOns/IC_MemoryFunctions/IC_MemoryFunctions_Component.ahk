@@ -31,7 +31,7 @@ IC_MemoryFunctions_ReadMemory()
 ; Primary
 #include *i %A_LineFile%\..\IC_MemoryFunctions_Component_Main.ahk
 ; Secondary
-#include *i %A_LineFile%\..\IC_MemoryFunctions_Component_GameSettings.ahk
+#include *i %A_LineFile%\..\IC_MemoryFunctions_Component_Testing.ahk
 
 GuiControl, ICScriptHub:Move, ModronTabControl, % "w" . g_TabControlWidth . " h" . g_TabControlHeight
 Gui, ICScriptHub:show, % "w" . g_TabControlWidth+5 . " h" . g_TabControlHeight
